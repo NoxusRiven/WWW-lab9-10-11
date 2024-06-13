@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="script.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dodaj dzban</title>
@@ -12,9 +14,16 @@
     require("db.php");
 
     $id = $_GET["id"];
+    $nick = $_SESSION["login"];
     $sql = "SELECT AVG(ocena) AS srednia FROM recenzje WHERE idDzbana=$id";
     $result = $conn->query($sql);
     $srednia = $result->fetch_object()->srednia;
+
+    $idUzytkownika = $_SESSION["id"];
+    $sql = "SELECT id FROM ulubione WHERE idDzbana = $id AND idUzytkownika = $idUzytkownika";
+    $added = $conn->query($sql)->num_rows > 0;
+    $text = $added ? "Usuń z ulubionych" : "Dodaj do ulubionych";
+    echo "<p class='fav' data-dzban='$id'>$text</p>";
 
     $sql = "SELECT idKategorii, k.nazwa AS nazwaKat, d.nazwa, obrazek, d.opis, pojemnosc,wysokosc FROM dzbany d, kategorie k WHERE d.id=$id AND idKategorii=k.id";
     $result = $conn->query($sql);
@@ -44,6 +53,7 @@
 <h3>Dodaj nową recenzje</h3>
     <form action="insertReview.php" method="POST">
         <input type="hidden" name="id" value="<?php echo $id; ?>">
+        <input type="hidden" name="nick" value="<?php echo $nick ?>">
         <p>Ocena:  <select name="ocena">
             <option value="1">1</option>
             <option value="2">2</option>
@@ -60,7 +70,7 @@
 
         $conn = new mysqli("localhost","root","","dzbanyv2db");
         $id = $_GET["id"];
-        $sql = "SELECT nick,ocena,tresc,data FROM recenzje WHERE idDzbana=$id";
+        $sql = "SELECT nick,ocena,tresc,data FROM recenzje r WHERE idDzbana=$id";
         $result = $conn->query($sql);
 
         $index = 1;

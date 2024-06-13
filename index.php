@@ -29,7 +29,7 @@
     <a href="insertForm.php">Dodaj dzban</a>
 
     <?php
-        $conn = new mysqli("localhost", "root", "", "dzbanyv2db");
+        require("db.php");
         $sql = "SELECT id, nazwa, obrazek FROM dzbany";
         if (isset($_GET["idKat"])) 
         {
@@ -50,7 +50,7 @@
             while($row = $result->fetch_assoc())
             {
                 echo "<tr>";
-                echo "<td><a href='details.php?id={$row["id"]}'><img src='{$row["obrazek"]}' alt='{$row["nazwa"]}'></a></td>";
+                echo "<td><a href='details.php?id={$row["id"]}'><img src='obrazki/{$row["obrazek"]}' alt='{$row["nazwa"]}'></a></td>";
                 echo "</tr>";
             }
             echo "</table>";
